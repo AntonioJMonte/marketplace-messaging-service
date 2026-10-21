@@ -1,0 +1,25 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.4-management
+    container_name: marketplace-rabbitmq
+    environment:
+      # Credenciais padrão (Mudar em produção)
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      # Persistir dados do RabbitMQ
+      - rabbitmq_data:/var/lib/rabbitmq
+    # Sempre reiniciar se cair
+    restart: unless-stopped
+    # Health check para garantir que está funcionando
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
